@@ -589,12 +589,23 @@ export default function SummerRegistrationForm() {
                 onClick={handleAddChild}
                 className={styles.btnAddChild}
               >
-                <FaPlus style={{ pointerEvents: 'none' }} /> Add Another Child (20% Off Each)
+                <span className={styles.addChildLeft}>
+                  <span className={styles.addChildIconCircle}>
+                    <FaPlus />
+                  </span>
+                  <span className={styles.addChildTitle}>Add Another Child</span>
+                </span>
+                <span className={styles.addChildDiscountBadge}>
+                  Save 20%
+                </span>
               </button>
 
               <div className={styles.buttonRow}>
                 <button type="submit" className={styles.btnPrimary}>
-                  Continue to Step 2 <FaArrowRight />
+                  <span>Continue to Step 2</span>
+                  <span className={styles.btnArrowIcon}>
+                    <FaArrowRight />
+                  </span>
                 </button>
               </div>
             </form>
