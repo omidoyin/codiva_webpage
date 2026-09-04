@@ -9,6 +9,7 @@ import { toPng } from 'html-to-image';
 import { FaPlus, FaTrash, FaCreditCard, FaBookmark, FaWhatsapp, FaPrint, FaCheckCircle, FaFileInvoiceDollar, FaDownload } from 'react-icons/fa';
 
 interface ChildEntry {
+  id?: string;
   name: string;
   age: string;
   course: string;
@@ -26,7 +27,7 @@ export default function EnrollmentForm({ isOpen, onClose }: EnrollmentFormProps)
   const [parentPhone, setParentPhone] = useState('');
 
   const [children, setChildren] = useState<ChildEntry[]>([
-    { name: '', age: '8', course: 'Scratch Coding', schedule: 'Weekend Saturday Classes' },
+    { id: 'enroll-child-0', name: '', age: '8', course: 'Scratch Coding', schedule: 'Weekend Saturday Classes' },
   ]);
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -112,7 +113,18 @@ export default function EnrollmentForm({ isOpen, onClose }: EnrollmentFormProps)
   };
 
   const handleAddChild = () => {
-    setChildren([...children, { name: '', age: '8', course: 'Scratch Coding', schedule: 'Weekend Saturday Classes' }]);
+    setErrorMessage('');
+    const newChildId = `enroll-child-${Date.now()}`;
+    setChildren((prev) => [
+      ...prev,
+      { id: newChildId, name: '', age: '8', course: 'Scratch Coding', schedule: 'Weekend Saturday Classes' },
+    ]);
+    setTimeout(() => {
+      const el = document.getElementById(newChildId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 80);
   };
 
   const handleRemoveChild = (index: number) => {
@@ -488,84 +500,87 @@ export default function EnrollmentForm({ isOpen, onClose }: EnrollmentFormProps)
                 <span>2. Children Information ({children.length} {children.length === 1 ? 'Child' : 'Children'})</span>
               </div>
 
-              {children.map((child, idx) => (
-                <div key={idx} className={styles.childCard}>
-                  <div className={styles.childHeader}>
-                    <span className={styles.childTitle}>Child #{idx + 1}</span>
-                    {children.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveChild(idx)}
-                        className={styles.btnRemoveChild}
-                      >
-                        <FaTrash /> Remove
-                      </button>
-                    )}
-                  </div>
-
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>Child's Full Name *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. David Okon"
-                        className={styles.input}
-                        value={child.name}
-                        onChange={(e) => handleChildChange(idx, 'name', e.target.value)}
-                      />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>Child's Age *</label>
-                      <select
-                        className={styles.select}
-                        value={child.age}
-                        onChange={(e) => handleChildChange(idx, 'age', e.target.value)}
-                      >
-                        {[5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map((a) => (
-                          <option key={a} value={a}>
-                            {a} years old
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>Select Program *</label>
-                      <select
-                        className={styles.select}
-                        value={child.course}
-                        onChange={(e) => handleChildChange(idx, 'course', e.target.value)}
-                      >
-                        <option value="Scratch Coding">Scratch Coding (Ages 5-8)</option>
-                        <option value="Web Development">Web Development (Ages 9-12)</option>
-                        <option value="Python Programming">Python Programming (Ages 13-17)</option>
-                        <option value="Graphic Design">Graphic Design (All Ages)</option>
-                        <option value="AI for Kids">AI for Kids (All Ages)</option>
-                        <option value="Summer Innovation Academy">Summer Innovation Academy 2026</option>
-                      </select>
+              {children.map((child, idx) => {
+                const cardId = child.id || `enroll-child-${idx}`;
+                return (
+                  <div key={cardId} id={cardId} className={styles.childCard}>
+                    <div className={styles.childHeader}>
+                      <span className={styles.childTitle}>Child #{idx + 1}</span>
+                      {children.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveChild(idx)}
+                          className={styles.btnRemoveChild}
+                        >
+                          <FaTrash /> Remove
+                        </button>
+                      )}
                     </div>
 
-                    <div className={styles.formGroup}>
-                      <label className={styles.label}>Learning Schedule *</label>
-                      <select
-                        className={styles.select}
-                        value={child.schedule}
-                        onChange={(e) => handleChildChange(idx, 'schedule', e.target.value)}
-                      >
-                        <option value="Online (Virtual)">Online (Virtual)</option>
-                        <option value="Weekend Saturday Classes">Weekend Saturday Classes</option>
-                        <option value="Physical Campus (Kwara)">Physical Campus (Kwara)</option>
-                      </select>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Child's Full Name *</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. David Okon"
+                          className={styles.input}
+                          value={child.name}
+                          onChange={(e) => handleChildChange(idx, 'name', e.target.value)}
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Child's Age *</label>
+                        <select
+                          className={styles.select}
+                          value={child.age}
+                          onChange={(e) => handleChildChange(idx, 'age', e.target.value)}
+                        >
+                          {[5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map((a) => (
+                            <option key={a} value={a}>
+                              {a} years old
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Select Program *</label>
+                        <select
+                          className={styles.select}
+                          value={child.course}
+                          onChange={(e) => handleChildChange(idx, 'course', e.target.value)}
+                        >
+                          <option value="Scratch Coding">Scratch Coding (Ages 5-8)</option>
+                          <option value="Web Development">Web Development (Ages 9-12)</option>
+                          <option value="Python Programming">Python Programming (Ages 13-17)</option>
+                          <option value="Graphic Design">Graphic Design (All Ages)</option>
+                          <option value="AI for Kids">AI for Kids (All Ages)</option>
+                          <option value="Summer Innovation Academy">Summer Innovation Academy 2026</option>
+                        </select>
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label className={styles.label}>Learning Schedule *</label>
+                        <select
+                          className={styles.select}
+                          value={child.schedule}
+                          onChange={(e) => handleChildChange(idx, 'schedule', e.target.value)}
+                        >
+                          <option value="Online (Virtual) ">Online (Virtual)</option>
+                          <option value="Weekend Saturday Classes">Weekend Saturday Classes</option>
+                          <option value="Physical Campus (Kwara)">Physical Campus (Kwara)</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
               <button type="button" onClick={handleAddChild} className={styles.btnAddChild}>
-                <FaPlus /> Add Another Child (Save 20%)
+                <FaPlus style={{ pointerEvents: 'none' }} /> Add Another Child (Save 20%)
               </button>
 
               {/* Promo Code Input Section */}

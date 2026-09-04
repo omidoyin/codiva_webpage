@@ -74,7 +74,7 @@ export default function SchoolPartnershipsPage() {
             <a
               href="mailto:codivabuilders@gmail.com?subject=School%20Partnership%20Inquiry"
               className="btn btn-secondary"
-              style={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+              style={{ borderColor: 'rgba(255,255,255,0.5)', color: 'black', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
             >
               <FaEnvelope /> Email Us
             </a>

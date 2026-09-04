@@ -254,6 +254,186 @@ app.post('/api/enroll', async (req, res) => {
   }
 });
 
+// Builder Academy Registration Endpoint (Multi-Tier + Multi-children + Discount + Payment)
+app.post('/api/builder-academy-register', async (req, res) => {
+  const origin = req.headers.origin;
+  if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  try {
+    const { 
+      parentName, 
+      parentPhone, 
+      parentEmail, 
+      children,
+      childName, 
+      childAge, 
+      preferredCampus,
+      agreeUpdates,
+      paymentMethod,
+      paymentStatus,
+      paymentReference,
+      promoCode
+    } = req.body || {};
+
+    if (!parentName || !parentEmail || !parentPhone) {
+      return res.status(400).json({ error: 'Parent Name, Email, and Phone number are required' });
+    }
+
+    let childrenList = Array.isArray(children) && children.length > 0 ? children : [];
+    if (childrenList.length === 0 && childName) {
+      childrenList.push({
+        name: childName,
+        age: parseInt(childAge || '0', 10),
+        tier: 'Builder',
+        course: 'Builder Academy (Builder Tier)',
+        schedule: preferredCampus || 'Online / Virtual Campus',
+        price: 55000
+      });
+    }
+
+    if (childrenList.length === 0) {
+      return res.status(400).json({ error: 'At least one child details must be provided' });
+    }
+
+    const tierPriceMap = {
+      Starter: 35000,
+      Builder: 55000,
+      'Pro Builder': 85000
+    };
+
+    // Calculate subtotal from each child's selected tier
+    let rawSubtotal = 0;
+    childrenList = childrenList.map(c => {
+      const tier = c.tier && tierPriceMap[c.tier] ? c.tier : 'Builder';
+      const price = tierPriceMap[tier];
+      rawSubtotal += price;
+      return {
+        ...c,
+        tier,
+        price,
+        course: c.course || `Builder Academy (${tier} Tier)`,
+        schedule: c.schedule || preferredCampus || 'Online / Virtual Campus'
+      };
+    });
+
+    const childCount = childrenList.length;
+    const multiChildDiscount = childCount >= 2 ? rawSubtotal * 0.20 : 0;
+    let finalTotal = rawSubtotal - multiChildDiscount;
+    let promoDiscount = 0;
+    let validatedPromo = null;
+
+    if (promoCode && promoCode.trim()) {
+      const promoResult = await validatePromoCodeHelper({
+        code: promoCode,
+        cartSubtotal: finalTotal,
+        program: 'Builder Academy',
+        parentEmail
+      });
+      if (promoResult.valid) {
+        promoDiscount = promoResult.discountAmount;
+        validatedPromo = promoResult;
+      }
+    }
+
+    const totalDiscountAmount = multiChildDiscount + promoDiscount;
+    finalTotal = Math.max(0, finalTotal - promoDiscount);
+
+    const status = paymentStatus || (paymentMethod === 'Paystack' ? 'Paid' : 'Pending Payment');
+    const method = paymentMethod || 'Pay Later';
+    const ref = paymentReference || `ACAD_${Date.now()}`;
+    const firstChild = childrenList[0];
+
+    let savedData = null;
+
+    try {
+      const result = await pool.query(
+        `INSERT INTO enrollments 
+         (parent_name, parent_email, parent_phone, child_name, child_age, course, learning_mode, children_json, amount, discount_amount, payment_status, payment_method, payment_reference)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+         RETURNING *`,
+        [
+          parentName,
+          parentEmail,
+          parentPhone,
+          firstChild.name || '',
+          parseInt(firstChild.age || '0', 10),
+          firstChild.course || 'Builder Academy',
+          preferredCampus || firstChild.schedule || 'Online / Virtual Campus',
+          JSON.stringify(childrenList),
+          finalTotal,
+          totalDiscountAmount,
+          status,
+          method,
+          ref
+        ]
+      );
+      savedData = result.rows[0];
+    } catch (pgErr) {
+      console.warn('[DB] PostgreSQL Builder Academy enrollment insert note:', pgErr.message);
+    }
+
+    if (!savedData && supabase) {
+      try {
+        const { data: sbData } = await supabase.from('enrollments').insert([
+          { 
+            parent_name: parentName, 
+            parent_email: parentEmail, 
+            parent_phone: parentPhone, 
+            child_name: firstChild.name || '', 
+            child_age: parseInt(firstChild.age || '0', 10), 
+            course: firstChild.course || 'Builder Academy', 
+            learning_mode: preferredCampus || firstChild.schedule || 'Online / Virtual Campus',
+            children_json: childrenList,
+            amount: finalTotal,
+            discount_amount: totalDiscountAmount,
+            payment_status: status,
+            payment_method: method,
+            payment_reference: ref,
+            created_at: new Date()
+          }
+        ]).select();
+        if (sbData && sbData.length > 0) savedData = sbData[0];
+      } catch (sbErr) {
+        console.warn('[DB] Supabase enrollment insert note:', sbErr.message);
+      }
+    }
+
+    if (validatedPromo) {
+      await recordPromoUsage(
+        validatedPromo.promoId,
+        validatedPromo.code,
+        parentEmail,
+        ref,
+        validatedPromo.discountAmount
+      );
+    }
+
+    return res.status(201).json({ 
+      message: 'Builder Academy enrollment saved successfully', 
+      pricing: {
+        rawSubtotal,
+        discountAmount: totalDiscountAmount,
+        finalTotal,
+        childCount
+      },
+      data: savedData || { 
+        id: Date.now(),
+        parentName, 
+        parentEmail, 
+        childrenList,
+        amount: finalTotal,
+        paymentStatus: status,
+        paymentReference: ref
+      } 
+    });
+  } catch (error) {
+    console.error('Error saving Builder Academy registration:', error.message);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+
 // Summer Academy Registration Endpoint (Multi-children + Discount + Payment)
 app.post('/api/summer-register', async (req, res) => {
   const origin = req.headers.origin;

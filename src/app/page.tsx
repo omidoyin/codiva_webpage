@@ -25,8 +25,8 @@ function useSlider() {
 
 /* ── data ── */
 const programs = [
-  { emoji: '🏫', icon: <FaSchool />, name: 'Builder Academy', desc: 'Flagship 12-week school-term program covering coding, AI, and digital creativity.', meta: ['Ages 6–17', '12 Weeks', 'Saturdays', 'Certificate'], price: '₦40,000', priceSuffix: '/term', btn: 'Learn More', href: '/builder-academy', badge: 'Flagship', color: '#0A66C2', bg: '#eff6ff' },
-  { emoji: '☀️', icon: <FaRocket />, name: 'Summer Innovation Academy', desc: 'Immersive 4-week holiday experience — games, websites, and AI projects.', meta: ['Ages 6–17', '4 Weeks', 'Mon–Fri', '9 AM–12 PM'], price: '₦50,000', priceSuffix: 'flat', btn: 'Register Now', href: '/summer', badge: 'Open Now 🔥', color: '#FF6B00', bg: '#fff7ed' },
+  { emoji: '🏫', icon: <FaSchool />, name: 'Builder Academy', desc: 'Flagship 12-week school-term program covering coding, AI, and digital creativity.', meta: ['Ages 6–17', '12 Weeks', 'Weekdays & Saturdays', 'Certificate'], price: null, priceSuffix: '', btn: 'View Plans & Enroll', href: '/builder-academy', badge: '🟢 Enrollment Open', color: '#0A66C2', bg: '#eff6ff' },
+  { emoji: '☀️', icon: <FaRocket />, name: 'Summer Innovation Academy', desc: 'Immersive 4-week holiday experience — games, websites, and AI projects.', meta: ['Ages 6–17', '4 Weeks', 'Mon–Fri', '9 AM–12 PM'], price: '₦50,000', priceSuffix: 'flat', btn: 'Learn More', href: '/summer', badge: null, color: '#FF6B00', bg: '#fff7ed' },
   { emoji: '🚀', icon: <FaRocket />, name: 'Holiday Innovation Camp', desc: 'Short holiday bursts at Christmas, Easter & mid-term — coding, AI & design.', meta: ['2 Weeks', 'Mon–Fri'], price: '₦30,000', priceSuffix: 'from', btn: 'Learn More', href: '/holiday-camp', badge: null, color: '#10b981', bg: '#ecfdf5' },
   { emoji: '⭐', icon: <FaBolt />, name: 'Builder Plus', desc: 'Accelerated pathway with advanced projects, competitions, and mentorship.', meta: ['12 Weeks', '2× /week', 'Portfolio', 'Competitions'], price: '₦75,000', priceSuffix: '/term', btn: 'Learn More', href: '/builder-plus', badge: 'Advanced', color: '#8b5cf6', bg: '#f5f3ff' },
   { emoji: '👨‍🏫', icon: <FaUserGraduate />, name: 'Private Coaching', desc: 'One-on-one sessions fully tailored to your child\'s goals and pace.', meta: ['Flexible', 'Personal plan', '1-on-1'], price: '₦15,000', priceSuffix: '/session', btn: 'Book a Session', href: '/private-coaching', badge: null, color: '#ec4899', bg: '#fdf2f8' },
@@ -80,7 +80,7 @@ export default function Home() {
           <span style={{ color: 'var(--primary-blue)' }}>Builders</span>
         </div>
         <nav className={styles.desktopNav}>
-          <a href="/summer" style={{ color: 'var(--secondary-orange)', fontWeight: 700 }}>Summer 2026 🔥</a>
+          <Link href="/builder-academy" style={{ color: 'var(--secondary-orange)', fontWeight: 700 }}>Builder Academy (Open 🟢)</Link>
           <a href="#programs">Programs</a>
           <a href="#about">About</a>
           <button onClick={() => openEnrollModal()} className={styles.navEnroll}>Enroll</button>
@@ -92,7 +92,7 @@ export default function Home() {
 
       {/* Mobile Overlay */}
       <div className={`${styles.mobileNav} ${mobileNavOpen ? styles.open : ''}`}>
-        <a href="/summer" className={styles.mobileNavAccent} onClick={closeMobileNav}>Summer 2026 🔥</a>
+        <Link href="/builder-academy" className={styles.mobileNavAccent} onClick={closeMobileNav}>Builder Academy (Open 🟢)</Link>
         <a href="#programs" onClick={closeMobileNav}>Programs</a>
         <a href="#about" onClick={closeMobileNav}>About</a>
         <a href="#courses" onClick={closeMobileNav}>Courses</a>
@@ -103,8 +103,8 @@ export default function Home() {
       {/* ─── HERO ───────────────────────────────────────── */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <a href="/summer" className={styles.heroPill}>
-            <FaRocket style={{ flexShrink: 0 }} /> Summer Innovation Academy 2026 — Registration Open!
+          <a href="/builder-academy" className={styles.heroPill}>
+            <FaSchool style={{ flexShrink: 0 }} /> Builder Academy — Term Enrollment Now Open!
           </a>
           <h1 className={styles.heroTitle}>Building Young Tech Minds for the Future</h1>
           <p className={styles.heroSubtitle}>
@@ -112,7 +112,7 @@ export default function Home() {
           </p>
           <div className={styles.heroButtons}>
             <button onClick={() => openEnrollModal()} className="btn btn-orange">Enroll Now</button>
-            <a href="/summer" className="btn btn-secondary" style={{ borderColor: 'var(--secondary-orange)', color: 'var(--secondary-orange)' }}>Summer Camp 2026</a>
+            <Link href="/builder-academy" className="btn btn-secondary" style={{ borderColor: 'var(--secondary-orange)', color: 'var(--secondary-orange)' }}>Explore Builder Academy</Link>
           </div>
         </div>
       </section>
@@ -136,8 +136,21 @@ export default function Home() {
                 </div>
                 <div className={styles.programDivider} />
                 <div className={styles.programBottom}>
-                  <div className={styles.programPrice}>{p.price} <span>{p.priceSuffix}</span></div>
-                  <Link href={p.href} className={styles.programBtn}>{p.btn} <FaArrowRight style={{ fontSize: '0.75em' }} /></Link>
+                  {p.price ? (
+                    <>
+                    <div className={styles.programPrice}>{p.price} <span>{p.priceSuffix}</span></div>
+                     <Link href={p.href} className={styles.programBtn}>{p.btn} <FaArrowRight style={{ fontSize: '0.75em' }} /></Link>
+                    </>
+                  ) : (
+                    <div >
+                    <div className={styles.programPrice} style={{ fontSize: '0.9rem', color: '#10b981', fontWeight: 700 }}>3 flexible plans available</div>
+                    <div>
+
+                     <Link href={p.href} className={styles.programBtn}>{p.btn} <FaArrowRight style={{ fontSize: '0.75em' }} /></Link>
+                    </div>
+                    </div>
+                  )}
+                 
                 </div>
               </div>
             ))}

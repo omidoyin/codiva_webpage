@@ -22,6 +22,7 @@ import {
 } from 'react-icons/fa';
 
 export interface SummerChildEntry {
+  id?: string;
   name: string;
   age: string;
   campus: string;
@@ -52,7 +53,7 @@ export default function SummerRegistrationForm() {
 
   // Multi-children state
   const [children, setChildren] = useState<SummerChildEntry[]>([
-    { name: '', age: '9', campus: 'Online / Virtual Campus' },
+    { id: 'summer-child-0', name: '', age: '9', campus: 'Online / Virtual Campus' },
   ]);
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -139,7 +140,18 @@ export default function SummerRegistrationForm() {
   };
 
   const handleAddChild = () => {
-    setChildren([...children, { name: '', age: '9', campus: 'Online / Virtual Campus' }]);
+    setErrorMessage('');
+    const newChildId = `summer-child-${Date.now()}`;
+    setChildren((prev) => [
+      ...prev,
+      { id: newChildId, name: '', age: '9', campus: 'Online / Virtual Campus' },
+    ]);
+    setTimeout(() => {
+      const el = document.getElementById(newChildId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 80);
   };
 
   const handleRemoveChild = (index: number) => {
@@ -515,8 +527,9 @@ export default function SummerRegistrationForm() {
 
               {children.map((child, idx) => {
                 const track = getTrackByAge(parseInt(child.age, 10) || 9);
+                const cardId = child.id || `summer-child-${idx}`;
                 return (
-                  <div key={idx} style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '12px', padding: '1rem', marginBottom: '1rem' }}>
+                  <div key={cardId} id={cardId} style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '12px', padding: '1rem', marginBottom: '1rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                       <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Child #{idx + 1}</span>
                       {children.length > 1 && (
@@ -574,9 +587,9 @@ export default function SummerRegistrationForm() {
               <button
                 type="button"
                 onClick={handleAddChild}
-                style={{ background: '#eff6ff', color: '#0A66C2', border: '1.5px dashed #93c5fd', width: '100%', padding: '0.75rem', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', marginBottom: '1rem' }}
+                className={styles.btnAddChild}
               >
-                <FaPlus /> Add Another Child (20% Off Each)
+                <FaPlus style={{ pointerEvents: 'none' }} /> Add Another Child (20% Off Each)
               </button>
 
               <div className={styles.buttonRow}>
