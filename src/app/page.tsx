@@ -4,12 +4,13 @@ import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 import EnrollmentForm from '../components/EnrollmentForm';
+import StudentProjectsShowcase from '../components/StudentProjectsShowcase';
 import { getWhatsAppLink } from '@/config/contact';
 import {
   FaSmile, FaTools, FaUsers, FaGlobe, FaChalkboardTeacher, FaRocket,
   FaGamepad, FaCode, FaPython, FaPalette, FaRobot, FaStar, FaWhatsapp,
   FaSchool, FaUserGraduate, FaBolt, FaArrowRight, FaBuilding, FaQuoteLeft,
-  FaChevronLeft, FaChevronRight,
+  FaChevronLeft, FaChevronRight, FaTimes,
 } from 'react-icons/fa';
 
 /* ── helpers ── */
@@ -82,6 +83,7 @@ export default function Home() {
         <nav className={styles.desktopNav}>
           <Link href="/builder-academy" style={{ color: 'var(--secondary-orange)', fontWeight: 700 }}>Builder Academy (Open 🟢)</Link>
           <a href="#programs">Programs</a>
+          <a href="#projects">Student Work</a>
           <a href="#about">About</a>
           <button onClick={() => openEnrollModal()} className={styles.navEnroll}>Enroll</button>
         </nav>
@@ -92,16 +94,28 @@ export default function Home() {
 
       {/* Mobile Overlay */}
       <div className={`${styles.mobileNav} ${mobileNavOpen ? styles.open : ''}`}>
+        <button
+          className={styles.mobileNavClose}
+          onClick={closeMobileNav}
+          aria-label="Close menu"
+        >
+          <FaTimes />
+        </button>
         <Link href="/builder-academy" className={styles.mobileNavAccent} onClick={closeMobileNav}>Builder Academy (Open 🟢)</Link>
         <a href="#programs" onClick={closeMobileNav}>Programs</a>
+        <a href="#projects" onClick={closeMobileNav}>Student Work</a>
         <a href="#about" onClick={closeMobileNav}>About</a>
         <a href="#courses" onClick={closeMobileNav}>Courses</a>
         <a href="#contact" onClick={closeMobileNav}>Contact</a>
-        <button onClick={() => openEnrollModal()}>Enroll Now</button>
+        <button onClick={() => { closeMobileNav(); openEnrollModal(); }}>Enroll Now</button>
       </div>
 
       {/* ─── HERO ───────────────────────────────────────── */}
       <section className={styles.hero}>
+        <div className={styles.heroImageContainer} aria-hidden="true">
+          <img src="/summer_hero.png" alt="" className={styles.heroImage} />
+          <div className={styles.imageCover}></div>
+        </div>
         <div className={styles.heroContent}>
           <a href="/builder-academy" className={styles.heroPill}>
             <FaSchool style={{ flexShrink: 0 }} /> Builder Academy — Term Enrollment Now Open!
@@ -110,6 +124,7 @@ export default function Home() {
           <p className={styles.heroSubtitle}>
             Teach your child coding, design, web development, Python, and AI — in a fun and practical way.
           </p>
+
           <div className={styles.heroButtons}>
             <button onClick={() => openEnrollModal()} className="btn btn-orange">Enroll Now</button>
             <Link href="/builder-academy" className="btn btn-secondary" style={{ borderColor: 'var(--secondary-orange)', color: 'var(--secondary-orange)' }}>Explore Builder Academy</Link>
@@ -243,6 +258,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ─── REAL STUDENT PROJECTS & PROOFS ──────────────── */}
+      <StudentProjectsShowcase onEnrollClick={() => openEnrollModal()} sectionId="projects" />
 
       {/* ─── HOW IT WORKS (compact inline) ─────────────── */}
       <section className={styles.stepsSection}>

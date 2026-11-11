@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import styles from './builder-academy.module.css';
 import BuilderAcademyRegistrationForm from '@/components/BuilderAcademyRegistrationForm';
+import StudentProjectsShowcase from '@/components/StudentProjectsShowcase';
 import { getWhatsAppLink } from '@/config/contact';
 import {
   FaRocket,
@@ -54,6 +55,7 @@ export default function BuilderAcademyPage() {
         <nav className={styles.navLinks}>
           <a href="#why-us" className={styles.navLink}>Why Us</a>
           <a href="#tracks" className={styles.navLink}>Learning Tracks</a>
+          <a href="#projects" className={styles.navLink}>Student Work</a>
           <a href="#schedule" className={styles.navLink}>Schedule</a>
           <a href="#gains" className={styles.navLink}>Outcomes</a>
           <a href="#register" className={`${styles.navLink} ${styles.navCta}`}>
@@ -351,6 +353,9 @@ export default function BuilderAcademyPage() {
           ))}
         </div>
       </section>
+
+      {/* STUDENT PROJECTS & PROOFS OF LEARNING */}
+      <StudentProjectsShowcase sectionId="projects" theme="white" />
 
       {/* REGISTRATION FORM SECTION */}
       <section className={styles.registrationSection} id="register">

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import styles from './summer.module.css';
 import SummerRegistrationForm from '@/components/SummerRegistrationForm';
+import StudentProjectsShowcase from '@/components/StudentProjectsShowcase';
 import { getWhatsAppLink } from '@/config/contact';
 import {
   FaStar,
@@ -63,6 +64,7 @@ export default function SummerPage() {
         <nav className={styles.navLinks}>
           <a href="#why-us" className={styles.navLink}>Why Us</a>
           <a href="#tracks" className={styles.navLink}>Learning Tracks</a>
+          <a href="#projects" className={styles.navLink}>Student Work</a>
           <a href="#schedule" className={styles.navLink}>Schedule</a>
           <a href="#gains" className={styles.navLink}>Outcomes</a>
           <a href="#register" className={`${styles.navLink} ${styles.navCta}`}>
@@ -326,6 +328,10 @@ export default function SummerPage() {
           ))}
         </div>
       </section>
+
+      {/* STUDENT PROJECTS & PROOFS OF LEARNING */}
+      <StudentProjectsShowcase sectionId="projects" theme="white" />
+
       {/* SummerRegistrationForm */}
 
       <section style={{ padding: '2.5rem 1.5rem 4rem', background: '#f8fafc' }}>
